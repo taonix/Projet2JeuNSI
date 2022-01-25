@@ -1,28 +1,9 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Jan 24 12:13:34 2022
+#texte = {
+#    'values': ["Ennemies : 1", "Score : 1"],
+#    'colors': [[0, 0, 0], [255, 255, 255]]
+#}
 
-@author: elinfo
-"""
-from random import randint
+#for i in range(len(texte['values'])): print(texte['values'][i], texte['colors'][i])
 
 
-def cree_listes(taillex, tailley, nbre):
-    """ 
-    taillex, tailley : dimensions de l'écran de jeu
-    nbre : nombre de carrés voulus
-    crée deux listes lx et ly de carrés mobiles en début de jeu,
-    et les renvoie"""
-    # votre code ici
-    lx = {}
-    ly = {}
-    
-    for i in range(nbre):
-        lx[i] = randint(0, taillex)
-        ly[i] = randint(0, tailley)
-    
-    return (lx, ly)
-
-print(cree_listes(10, 10, 5))
-
+print(10%10)

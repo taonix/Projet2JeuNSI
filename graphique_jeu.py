@@ -10,15 +10,17 @@ import pygame
 from pygame import Rect
 
 pygame.init()
+pygame.display.set_caption("The Esccaper")
 
 
 ############## Constantes pygame ################
 size = largeur, hauteur = 800, 600
 tsprite = 20 # taille d'un sprite en pixels
-couleur_fond = (10, 10, 10) # gris foncé
+couleur_fond = (255, 255, 255) # gris foncé
 couleur_contour = (0, 0, 100) # bleu foncé
 couleur_bloc_perso = (0,150,100) # bleu-vert
 couleur_blocs_mobiles = (150,0,0) #  rouge un peu foncé
+couleur_bloc_bonus = (181, 146, 5) # couleur bloc bonus
 pos_jeu = 10,10 # position du jeu par rapport à (0,0)
 
 # Le texte
@@ -40,6 +42,15 @@ clock=pygame.time.Clock()
 # pour rester appuyé sur une touche
 pygame.key.set_repeat(200,100)
 
+def gradientRect( window, left_colour, right_colour, target_rect ):
+    """ Draw a horizontal-gradient filled rectangle covering <target_rect> """
+    colour_rect = pygame.Surface((2, 2))
+    pygame.draw.line(colour_rect, left_colour,  (0, 0), (0, 1))
+    pygame.draw.line(colour_rect, right_colour, (1, 0), (1, 1))
+    colour_rect = pygame.transform.smoothscale(colour_rect, (target_rect.width, target_rect.height))
+    window.blit(colour_rect, target_rect)
+
+
 def convertit_coord_vers_rect(x,y, h, l):
     """ prend en argument des coordonnées dans la grille et 
     les dimensions du rectangle, et les
@@ -49,15 +60,17 @@ def convertit_coord_vers_rect(x,y, h, l):
     return Rect(xr,yr,h,l)
 
 
-
-def affiche_jeu(taillex, tailley, lx, ly, x, y, texte):
+invincibile_cli = 0
+def affiche_jeu(taillex, tailley, lx, ly, x, y, texte, invincibile, bonus):
     """ taillex, tailley : dimensions du jeu
     lx, ly : listes des coord des blocs mobiles
     x, y : coords du bloc "perso"
     texte : texte à afficher à droite, sous forme de tableau (une ligne = 1 élt) """
     
     assert len(lx) == len(ly), "Les listes lx et ly doivent être de la même taille !"
-    
+
+    global invincibile_cli
+
     hjeu = tailley*tsprite
     ljeu = taillex*tsprite
     
@@ -67,23 +80,40 @@ def affiche_jeu(taillex, tailley, lx, ly, x, y, texte):
     
     # Dessin du "fond"
     screen.fill(couleur_contour)
+    gradientRect(screen, (0, 0, 0), (33, 33, 33), screen.get_rect())
+
     pygame.draw.rect(screen, couleur_fond, convertit_coord_vers_rect(0,0,ljeu,hjeu))
     
     # Dessin des blocs "figés" de la grille
-    
+
+    if invincibile and invincibile_cli == 0:
+        couleur_bloc_perso = (120, 13, 1)
+        invincibile_cli = 1
+    else:
+        couleur_bloc_perso = (0,150,100)
+        if invincibile_cli == 1:
+            invincibile_cli = 0
+
     # Dessin des blocs mobiles
     for i in range(len(lx)):
         pygame.draw.rect(screen, couleur_blocs_mobiles, convertit_coord_vers_rect(lx[i],ly[i], tsprite, tsprite))
     # Dessin du bloc perso
     pygame.draw.rect(screen, couleur_bloc_perso, convertit_coord_vers_rect(x,y, tsprite, tsprite))
+    # Dessin du bloc bonus (S'il y en a un)
+    if bonus is not None: pygame.draw.rect(screen, couleur_bloc_bonus, convertit_coord_vers_rect(bonus[0], bonus[1], tsprite, tsprite))
     
 #    for i,j in bloc:
 #        pygame.draw.rect(screen, couleur_blocs_mobiles, convertit_coord_vers_rect(j,i, tsprite, tsprite))
 #    
     # Dessin du texte
-    for i in range(len(texte)):
-        a_afficher = police.render(texte[i], 0, couleur_texte)    
-        screen.blit(a_afficher, (xtexte,ytexte+i*tsprite))
-    
+    j=0
+    for i in range(len(texte['values'])):
+        j = j + 1
+        a_afficher = police.render(texte['values'][i], True, texte['colors'][i], texte['bg_colors'][i])
+        screen.blit(a_afficher, (xtexte,ytexte+(i+j)*tsprite))
+
+    image = pygame.image.load(r'logo.png')
+    screen.blit(image, (10, hjeu + 20))
+
     # mise à jour de l'affichage
     pygame.display.flip()
