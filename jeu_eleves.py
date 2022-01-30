@@ -44,7 +44,7 @@ def bouge(taillex, tailley, lx, ly, bonus):
         lx[i] = lx[i] + randint(-1, 1)
         ly[i] = ly[i] + randint(-1, 1)
 
-        if bonus is not None :
+        if bonus is not None:
             while lx[i] == bonus[0] and ly[i] == bonus[1]:
                 lx[i] = lx[i] + randint(-1, 1)
                 ly[i] = ly[i] + randint(-1, 1)
@@ -56,16 +56,6 @@ def bouge(taillex, tailley, lx, ly, bonus):
 
 
 ############ Fonction du jeu
-
-delai = 1  # délai en secondes entre deux mouvements des objets mobiles
-tour = 0  # nombre de tours effectués
-vie = 3  # nombre de vies de départ
-invincible = 0  # nombre de tours d'invincibilité
-ennemies = 0  # nombre d'ennemis
-score = 0  # score du joueur
-bonus = None  # bonus en cours
-
-
 def collision(lx, ly, x, y, bonus):
     final = [False, False]
     for i in range(len(lx)):
@@ -74,21 +64,23 @@ def collision(lx, ly, x, y, bonus):
     return final
 
 
-def jeu(taillex, tailley):
+def jeu(taillex, tailley, params):
     """ taillex et tailley sont les dimensions du jeu souhaitées
     Règles du jeu : """
 
     ###### Initialisation du jeu #######
-    global delai, tour, vie, invincible, ennemies, score, bonus
+    # global delai, tour, vie, invincible, ennemies, score, bonus
 
     # Initialisation de x et y les coordonnées du carré perso
     x = ceil(taillex / 2)
     y = ceil(tailley / 2)
 
-    # création des objets mobiles en début de jeu (combien ?)
-    ennemies = 3 / 100 * (taillex * tailley)
+    current_tip = ""
 
-    lx, ly = cree_listes(x, y, taillex, tailley, ceil(ennemies))
+    # création des objets mobiles en début de jeu (combien ?)
+    params['ennemies'] = 3 / 100 * (taillex * tailley)
+
+    lx, ly = cree_listes(x, y, taillex, tailley, ceil(params['ennemies']))
 
     # Autres initialisation (score, points de vie, ... ?)
 
@@ -131,52 +123,59 @@ def jeu(taillex, tailley):
 
         # Gestion des collisions
         # On récupère l'indice de collision dans i_coll
-        col = collision(lx, ly, x, y, bonus)
-        if col[0] and invincible == 0:
-            vie = vie - 1
+        col = collision(lx, ly, x, y, params['bonus'])
+        if col[0] and params['invincible'] == 0:
+            params['vie'] -= 1
             x = ceil(taillex / 2)
             y = ceil(tailley / 2)
-            invincible = 3
-            if score >= 3: score -= 3
-            if vie == 0:
+            params['invincible'] = 3
+            if params['score'] >= 3: params['score'] -= 3
+            if params['vie'] == 0:
+                perdu(taillex, tailley)
                 continuer = False
 
         if col[1]:
-            bonus = None
-            vie += 1
+            params['bonus'] = None
+            params['vie'] += 1
 
         # À vous de jouer, que se passe-t-il s'il y a collision
 
+        tips = ["Use arrow keys to move", "Avoid the red blocks !", "Bonus can spawn for revive"]
+
         t = t + 1 / fps  # temps passé
-        if t > delai:  # si on a passé le délai, on fait bouger les objets
+        if t > params['delai']:  # si on a passé le délai, on fait bouger les objets
             # et il peut se passer autre chose (au choix)
             t = 0
 
-            if tour % 10 == 0 and tour != 0:
-                ennemies = ennemies + (1 / 100 * (taillex * tailley))
-                lx, ly = cree_listes(x, y, taillex, tailley, ceil(ennemies))
-            if tour % 20 == 0 and tour != 0 and bonus is None: bonus = [randint(0, taillex - 1), randint(0, tailley - 1)]
+            if params['tour'] % 10 == 0 and params['tour'] != 0: # chaque 10 tours
+                params['ennemies'] = params['ennemies'] + (1 / 100 * (taillex * tailley)) # ajout d'ennemis
+                lx, ly = cree_listes(x, y, taillex, tailley, ceil(params['ennemies'])) # On crée de nouveaux ennemies
+            if params['tour'] % 20 == 0 and params['tour'] != 0 and params['bonus'] is None: # permet de faire apparaitre un bonus
+                params['bonus'] = [randint(0, taillex - 1), randint(0, tailley - 1)] # x, y du bonus à créer
+                current_tip = "Take the gold block !" # tips[randint(0, len(tips) - 1)]
+            if params['tour'] % 3 == 0: # on change de tip toutes les 3 secondes
+                current_tip = tips[randint(0, len(tips) - 1)] # random tip from the list
 
-            bouge(taillex, tailley, lx, ly, bonus)
+            bouge(taillex, tailley, lx, ly, params['bonus'])  # on bouge les objets
 
-            tour += 1
-            score += 1
+            params['tour'] += 1  # on incrémente le tour
+            params['score'] += 1  # à modifier si on veut faire des points
 
-            if invincible != 0: invincible = invincible - 1
+            if params['invincible'] != 0: params['invincible'] -= 1  # si le perso est invincible on le retire
 
         # Autres événements qui peuvent se passer à chaque nouvelle frame
 
+        vt = False  # variable de test pour savoir si on a touché un ennemi
+        if params['invincible'] != 0: vt = True  # si le perso est invincible, on l'affiche en rouge
+
         texte = {
-            'values': [f"Score : {score}", f"Round : {tour}", f"Ennemies : {len(lx)}", f"Life : {vie}",
-                       "Tips : Use arrow keys to move"],
+            'values': [f"Score : {params['score']}", f"Round : {params['tour']}", f"Ennemies : {len(lx)}",
+                       f"Life : {params['vie']}", f"Tips : {current_tip}"],
             'colors': [[255, 255, 255], [255, 255, 255], [255, 255, 255], [255, 255, 255], [5, 181, 58]],
             'bg_colors': [[181, 146, 5], [0, 0, 0], [0, 0, 0], [156, 6, 6], [255, 255, 255]],
-        }
+        }  # texte à afficher
 
-        vt = False
-        if invincible != 0: vt = True
-
-        affiche_jeu(taillex, tailley, lx, ly, x, y, texte, vt, bonus)
+        affiche_jeu(taillex, tailley, lx, ly, x, y, texte, vt, params['bonus'])  # affichage du jeu
 
         # permet de ne pas aller plus vite que fps frames par seconde
         clock.tick(fps)
@@ -186,4 +185,15 @@ def jeu(taillex, tailley):
 
 
 # Lancement du jeu
-jeu(15, 15)
+jeu(15,
+    15,
+    {
+        'delai': 1,
+        'tour': 0,
+        'vie': 3,
+        'invincible': 0,
+        'ennemies': 0,
+        'score': 0,
+        'bonus': None
+
+    })  # 15x15, 1 seconde de délai entre chaque mouvement, 3 vies, 0 ennemies, 0 points, pas de bonus

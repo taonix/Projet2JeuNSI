@@ -42,7 +42,7 @@ clock=pygame.time.Clock()
 # pour rester appuyé sur une touche
 pygame.key.set_repeat(200,100)
 
-def gradientRect( window, left_colour, right_colour, target_rect ):
+def gradientRect( window, left_colour, right_colour, target_rect ): # fonction pour faire un rectangle avec un gradient
     """ Draw a horizontal-gradient filled rectangle covering <target_rect> """
     colour_rect = pygame.Surface((2, 2))
     pygame.draw.line(colour_rect, left_colour,  (0, 0), (0, 1))
@@ -51,7 +51,7 @@ def gradientRect( window, left_colour, right_colour, target_rect ):
     window.blit(colour_rect, target_rect)
 
 
-def convertit_coord_vers_rect(x,y, h, l):
+def convertit_coord_vers_rect(x,y, h, l): # convertit les coordonnées en pixels en coordonnées de sprite
     """ prend en argument des coordonnées dans la grille et 
     les dimensions du rectangle, et les
     convertit en coordonnées pygame"""
@@ -59,9 +59,21 @@ def convertit_coord_vers_rect(x,y, h, l):
     yr = y*tsprite + pos_jeu[1]
     return Rect(xr,yr,h,l)
 
+def perdu(taillex, tailley): # fonction pour afficher le texte de fin
+   hjeu = tailley*tsprite
+   ljeu = taillex*tsprite
+
+   screen.fill(couleur_contour)
+   gradientRect(screen, (0, 0, 0), (33, 33, 33), screen.get_rect())
+
+   pygame.draw.rect(screen, couleur_fond, convertit_coord_vers_rect(0,0,ljeu,hjeu))
+
+   a_afficher = police.render("You lose ! (Enter to restart)", True, [255, 255, 255], [0, 0, 0])
+   screen.blit(a_afficher, (pos_jeu[0] + (taillex/2),pos_jeu[1] + (tailley/2)))
+
 
 invincibile_cli = 0
-def affiche_jeu(taillex, tailley, lx, ly, x, y, texte, invincibile, bonus):
+def affiche_jeu(taillex, tailley, lx, ly, x, y, texte, invincibile, bonus): # affiche le jeu en fonction des paramètres reçus
     """ taillex, tailley : dimensions du jeu
     lx, ly : listes des coord des blocs mobiles
     x, y : coords du bloc "perso"
@@ -117,3 +129,4 @@ def affiche_jeu(taillex, tailley, lx, ly, x, y, texte, invincibile, bonus):
 
     # mise à jour de l'affichage
     pygame.display.flip()
+    
