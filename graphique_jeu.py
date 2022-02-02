@@ -60,17 +60,20 @@ def convertit_coord_vers_rect(x,y, h, l): # convertit les coordonnées en pixels
     return Rect(xr,yr,h,l)
 
 def perdu(taillex, tailley): # fonction pour afficher le texte de fin
-   hjeu = tailley*tsprite
-   ljeu = taillex*tsprite
-
    screen.fill(couleur_contour)
    gradientRect(screen, (0, 0, 0), (33, 33, 33), screen.get_rect())
 
-   pygame.draw.rect(screen, couleur_fond, convertit_coord_vers_rect(0,0,ljeu,hjeu))
-
-   a_afficher = police.render("You lose ! (Enter to restart)", True, [255, 255, 255], [0, 0, 0])
+   a_afficher = police.render("You lose ! (Space to restart)", True, [255, 255, 255], [0, 0, 0])
    screen.blit(a_afficher, (pos_jeu[0] + (taillex/2),pos_jeu[1] + (tailley/2)))
+   
+   # mise à jour de l'affichage
+   pygame.display.flip()
 
+def accueil(path): # fonction pour afficher le texte d'accueil
+    # Dessin du "fond"
+    image = pygame.image.load(path)
+    screen.blit(image, (0, 0))
+    pygame.display.flip()
 
 invincibile_cli = 0
 def affiche_jeu(taillex, tailley, lx, ly, x, y, texte, invincibile, bonus): # affiche le jeu en fonction des paramètres reçus
@@ -91,10 +94,10 @@ def affiche_jeu(taillex, tailley, lx, ly, x, y, texte, invincibile, bonus): # af
     ytexte = pos_jeu[1] + tsprite
     
     # Dessin du "fond"
-    screen.fill(couleur_contour)
-    gradientRect(screen, (0, 0, 0), (33, 33, 33), screen.get_rect())
+    image = pygame.image.load(r'.\assets\background.png')
+    screen.blit(image, (0, 0))
 
-    pygame.draw.rect(screen, couleur_fond, convertit_coord_vers_rect(0,0,ljeu,hjeu))
+    gradientRect(screen, (0, 0, 0), (33, 33, 33), convertit_coord_vers_rect(0,0,ljeu,hjeu))
     
     # Dessin des blocs "figés" de la grille
 
@@ -124,8 +127,7 @@ def affiche_jeu(taillex, tailley, lx, ly, x, y, texte, invincibile, bonus): # af
         a_afficher = police.render(texte['values'][i], True, texte['colors'][i], texte['bg_colors'][i])
         screen.blit(a_afficher, (xtexte,ytexte+(i+j)*tsprite))
 
-    image = pygame.image.load(r'logo.png')
-    screen.blit(image, (10, hjeu + 20))
+
 
     # mise à jour de l'affichage
     pygame.display.flip()

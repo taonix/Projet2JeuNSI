@@ -12,7 +12,7 @@ from math import *
 
 ### Vos fonctions ci-dessous
 
-def cree_listes(x, y, taillex, tailley, nbre):
+def cree_listes(x, y, taillex, tailley, nbre, lx, ly):
     """
     x, y : coordonnées du joueur
     taillex, tailley : dimensions de l'écran de jeu
@@ -20,36 +20,41 @@ def cree_listes(x, y, taillex, tailley, nbre):
     crée deux listes lx et ly de carrés mobiles en début de jeu,
     et les renvoie"""
     # votre code ici
-    lx = {}
-    ly = {}
 
-    for i in range(nbre):
+    for i in range(nbre): # crée les carrés
 
-        randx = randint(0, taillex - 1)
-        randy = randint(0, tailley - 1)
+        randx = randint(0, taillex - 1) # choisit un x aléatoire
+        randy = randint(0, tailley - 1) # choisit un y aléatoire
 
-        while randx == x and randy == y:
-            randx = randint(0, taillex - 1)
-            randy = randint(0, tailley - 1)
+        while randx == x and randy == y: # si ils sont sur le joueur
+            randx = randint(0, taillex - 1) # choisit un x aléatoire
+            randy = randint(0, tailley - 1) # choisit un y aléatoire
 
-        ly[i] = randy
-        lx[i] = randx
+        ly.append(randy) # ajoute le y
+        lx.append(randx) # ajoute le carré à la liste
 
-    return (lx, ly)
+    return (lx, ly) # renvoie les listes
+    
 
 
-def bouge(taillex, tailley, lx, ly, bonus):
+def bouge(taillex, tailley, lx, ly, bonus): # fonction de mouvement pour chaque carré rouge
     for i in range(len(lx)):
-
-        lx[i] = lx[i] + randint(-1, 1)
-        ly[i] = ly[i] + randint(-1, 1)
+        
+        x = randint(-1, 1) # choisit un x aléatoire
+        y = randint(-1, 1) # choisit un y aléatoire
+        while i > 0 and lx[i-1] == x and ly[i-1] == y:
+            x = randint(-1, 1)
+            y = randint(-1, 1)
+        
+        lx[i] = lx[i] + x
+        ly[i] = ly[i] + y
 
         if bonus is not None:
             while lx[i] == bonus[0] and ly[i] == bonus[1]:
                 lx[i] = lx[i] + randint(-1, 1)
                 ly[i] = ly[i] + randint(-1, 1)
 
-        if lx[i] < 0: lx[i] = taillex - 1
+        if lx[i] < 0: lx[i] = taillex - 1 # si le carré sort de l'écran, il revient en arrière
         if lx[i] > taillex - 1: lx[i] = 0
         if ly[i] < 0: ly[i] = tailley - 1
         if ly[i] > tailley - 1: ly[i] = 0
@@ -80,7 +85,7 @@ def jeu(taillex, tailley, params):
     # création des objets mobiles en début de jeu (combien ?)
     params['ennemies'] = 3 / 100 * (taillex * tailley)
 
-    lx, ly = cree_listes(x, y, taillex, tailley, ceil(params['ennemies']))
+    lx, ly = cree_listes(x, y, taillex, tailley, ceil(params['ennemies']), [], [])
 
     # Autres initialisation (score, points de vie, ... ?)
 
@@ -131,8 +136,8 @@ def jeu(taillex, tailley, params):
             params['invincible'] = 3
             if params['score'] >= 3: params['score'] -= 3
             if params['vie'] == 0:
-                perdu(taillex, tailley)
                 continuer = False
+            
 
         if col[1]:
             params['bonus'] = None
@@ -148,8 +153,7 @@ def jeu(taillex, tailley, params):
             t = 0
 
             if params['tour'] % 10 == 0 and params['tour'] != 0: # chaque 10 tours
-                params['ennemies'] = params['ennemies'] + (1 / 100 * (taillex * tailley)) # ajout d'ennemis
-                lx, ly = cree_listes(x, y, taillex, tailley, ceil(params['ennemies'])) # On crée de nouveaux ennemies
+                lx, ly = cree_listes(x, y, taillex, tailley, ceil(1 / 100 * (taillex * tailley)), lx, ly) # On crée de nouveaux ennemies
             if params['tour'] % 20 == 0 and params['tour'] != 0 and params['bonus'] is None: # permet de faire apparaitre un bonus
                 params['bonus'] = [randint(0, taillex - 1), randint(0, tailley - 1)] # x, y du bonus à créer
                 current_tip = "Take the gold block !" # tips[randint(0, len(tips) - 1)]
@@ -176,13 +180,27 @@ def jeu(taillex, tailley, params):
         }  # texte à afficher
 
         affiche_jeu(taillex, tailley, lx, ly, x, y, texte, vt, params['bonus'])  # affichage du jeu
-
+        
         # permet de ne pas aller plus vite que fps frames par seconde
         clock.tick(fps)
 
         # Si on sort de la boucle, c'est qu'on a perdu (ou autre). Afficher alors
     # quelque chose ?
+    perdu(taillex, tailley)
+    while not continuer:
+        # Gestion des évènements
+        for event in pygame.event.get():  # Si on quitte
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return
 
+            # Si touche appuyée
+            if event.type == pygame.K_SPACE:
+                print("cc")
+
+
+
+#accueil(r'./assets/background.png')
 
 # Lancement du jeu
 jeu(15,
