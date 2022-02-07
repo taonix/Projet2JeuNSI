@@ -8,9 +8,10 @@ Created on Tue Jan  5 16:17:46 2021
 
 import pygame
 from pygame import Rect
+import os,random
 
 pygame.init()
-pygame.display.set_caption("The Esccaper")
+pygame.display.set_caption("The Escaper")
 
 
 ############## Constantes pygame ################
@@ -97,25 +98,32 @@ def affiche_jeu(taillex, tailley, lx, ly, x, y, texte, invincibile, bonus): # af
     image = pygame.image.load(r'.\assets\background.png')
     screen.blit(image, (0, 0))
 
-    gradientRect(screen, (0, 0, 0), (33, 33, 33), convertit_coord_vers_rect(0,0,ljeu,hjeu))
+    #gradientRect(screen, (0, 0, 0), (33, 33, 33), convertit_coord_vers_rect(0,0,ljeu,hjeu))
+    screen.blit(pygame.image.load(r'.\assets\bg_game.png'), convertit_coord_vers_rect(0, 0, ljeu,hjeu))
     
     # Dessin des blocs "figés" de la grille
 
     if invincibile and invincibile_cli == 0:
-        couleur_bloc_perso = (120, 13, 1)
+        couleur_bloc_perso = pygame.image.load(r'.\assets\skins\damaged_steve.png')
         invincibile_cli = 1
     else:
-        couleur_bloc_perso = (0,150,100)
+        couleur_bloc_perso = pygame.image.load(r'.\assets\skins\steve.png')
         if invincibile_cli == 1:
             invincibile_cli = 0
 
     # Dessin des blocs mobiles
     for i in range(len(lx)):
-        pygame.draw.rect(screen, couleur_blocs_mobiles, convertit_coord_vers_rect(lx[i],ly[i], tsprite, tsprite))
+        path = r".\assets\skins\Enemies"
+        skin = "zombie.png"
+        if i>5: skin = "skeleton.png"
+        if i>10: skin = "creeper.png"
+        screen.blit(pygame.image.load(path + "\\" + skin), convertit_coord_vers_rect(lx[i],ly[i], tsprite, tsprite))
+        #pygame.draw.rect(screen, couleur_blocs_mobiles, convertit_coord_vers_rect(lx[i],ly[i], tsprite, tsprite))
     # Dessin du bloc perso
-    pygame.draw.rect(screen, couleur_bloc_perso, convertit_coord_vers_rect(x,y, tsprite, tsprite))
+    #pygame.draw.rect(screen, couleur_bloc_perso, convertit_coord_vers_rect(x,y, tsprite, tsprite))
+    screen.blit(couleur_bloc_perso, convertit_coord_vers_rect(x, y, tsprite, tsprite))
     # Dessin du bloc bonus (S'il y en a un)
-    if bonus is not None: pygame.draw.rect(screen, couleur_bloc_bonus, convertit_coord_vers_rect(bonus[0], bonus[1], tsprite, tsprite))
+    if bonus is not None: screen.blit(screen, r'.\assets\skins\bonus.png', convertit_coord_vers_rect(bonus[0], bonus[1], tsprite, tsprite))
     
 #    for i,j in bloc:
 #        pygame.draw.rect(screen, couleur_blocs_mobiles, convertit_coord_vers_rect(j,i, tsprite, tsprite))
