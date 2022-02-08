@@ -228,8 +228,13 @@ def jeu(taillex, tailley, params):
 
         # Si on sort de la boucle, c'est qu'on a perdu (ou autre). Afficher alors
     # quelque chose ?
-    perdu(taillex, tailley)
-    while not continuer:
+    main_menu()
+
+
+def main_menu():
+    title_screen()
+    continuer = True
+    while continuer:
         # Gestion des évènements
         for event in pygame.event.get():  # Si on quitte
             if event.type == pygame.QUIT:
@@ -237,22 +242,25 @@ def jeu(taillex, tailley, params):
                 return
 
             # Si touche appuyée
-            if event.type == pygame.K_SPACE:
-                print("cc")
+            if event.type == pygame.KEYDOWN:
 
+                if event.key == pygame.K_SPACE:
+                    # appui sur la touche "gauche"
+                    # le carré perso se déplace à gauche
+                    # Lancement du jeu
+                    jeu(15,
+                        15,
+                        {
+                            'delai': 1,
+                            'tour': 0,
+                            'vie': 3,
+                            'invincible': 0,
+                            'ennemies': 0,
+                            'score': 0,
+                            'bonus': None
 
-# accueil(r'./assets/background.png')
+                        })  # 15x15, 1 seconde de délai entre chaque mouvement, 3 vies, 0 ennemies, 0 points, pas de bonus
+                    continuer = False
+                    pass
 
-# Lancement du jeu
-jeu(15,
-    15,
-    {
-        'delai': 1,
-        'tour': 0,
-        'vie': 3,
-        'invincible': 0,
-        'ennemies': 0,
-        'score': 0,
-        'bonus': None
-
-    })  # 15x15, 1 seconde de délai entre chaque mouvement, 3 vies, 0 ennemies, 0 points, pas de bonus
+main_menu()

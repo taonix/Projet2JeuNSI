@@ -62,18 +62,9 @@ def convertit_coord_vers_rect(x, y, h, l):  # convertit les coordonnées en pixe
     return Rect(xr, yr, h, l)
 
 
-def perdu(taillex, tailley):  # fonction pour afficher le texte de fin
-    a_afficher = police.render("You lose ! (Space to restart)", True, [255, 255, 255], [0, 0, 0])
-    screen.blit(a_afficher, (pos_jeu[0] + (taillex / 2), pos_jeu[1] + (tailley / 2)))
-
+def title_screen():  # fonction pour afficher le texte de fin
+    screen.blit(pygame.image.load(r'.\assets\titleScreen.png'), (0, 0))
     # mise à jour de l'affichage
-    pygame.display.flip()
-
-
-def accueil(path):  # fonction pour afficher le texte d'accueil
-    # Dessin du "fond"
-    image = pygame.image.load(path)
-    screen.blit(image, (0, 0))
     pygame.display.flip()
 
 
