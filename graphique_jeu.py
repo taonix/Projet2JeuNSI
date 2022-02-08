@@ -11,11 +11,12 @@ from pygame import Rect
 import os,random
 
 pygame.init()
+pygame.mixer.init()
 pygame.display.set_caption("The Escaper")
 
 
 ############## Constantes pygame ################
-size = largeur, hauteur = 800, 600
+size = largeur, hauteur = 700, 320
 tsprite = 20 # taille d'un sprite en pixels
 couleur_fond = (255, 255, 255) # gris foncé
 couleur_contour = (0, 0, 100) # bleu foncé
@@ -123,7 +124,7 @@ def affiche_jeu(taillex, tailley, lx, ly, x, y, texte, invincibile, bonus): # af
     #pygame.draw.rect(screen, couleur_bloc_perso, convertit_coord_vers_rect(x,y, tsprite, tsprite))
     screen.blit(couleur_bloc_perso, convertit_coord_vers_rect(x, y, tsprite, tsprite))
     # Dessin du bloc bonus (S'il y en a un)
-    if bonus is not None: screen.blit(screen, r'.\assets\skins\bonus.png', convertit_coord_vers_rect(bonus[0], bonus[1], tsprite, tsprite))
+    if bonus is not None: screen.blit(pygame.image.load(r'.\assets\skins\objects\bonus.png'), convertit_coord_vers_rect(bonus[0], bonus[1], tsprite, tsprite))
     
 #    for i,j in bloc:
 #        pygame.draw.rect(screen, couleur_blocs_mobiles, convertit_coord_vers_rect(j,i, tsprite, tsprite))

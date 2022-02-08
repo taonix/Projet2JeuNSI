@@ -105,6 +105,9 @@ def jeu(taillex, tailley, params):
             # Si touche appuyée
             if event.type == pygame.KEYDOWN:
 
+                pygame.mixer.Channel(0).fadeout(2)
+                pygame.mixer.Channel(0).play(pygame.mixer.Sound(r'.\assets\sounds\move.wav'))
+
                 if event.key == K_LEFT:
                     # appui sur la touche "gauche"
                     # le carré perso se déplace à gauche
@@ -130,12 +133,14 @@ def jeu(taillex, tailley, params):
         # On récupère l'indice de collision dans i_coll
         col = collision(lx, ly, x, y, params['bonus'])
         if col[0] and params['invincible'] == 0:
+            pygame.mixer.Channel(1).play(pygame.mixer.Sound(r'.\assets\sounds\degat.wav'))
             params['vie'] -= 1
             x = ceil(taillex / 2)
             y = ceil(tailley / 2)
             params['invincible'] = 3
             if params['score'] >= 3: params['score'] -= 3
             if params['vie'] == 0:
+                pygame.mixer.Channel(2).play(pygame.mixer.Sound(r'.\assets\sounds\lose.wav'))
                 continuer = False
             
 
