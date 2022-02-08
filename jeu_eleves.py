@@ -232,6 +232,13 @@ def jeu(taillex, tailley, params):
 
 
 def main_menu():
+    """Menu principal du jeu"""
+
+    # Init de la musique
+    pygame.mixer.music.stop()
+    pygame.mixer.music.load(r'.\assets\sounds\title_music.wav')
+    pygame.mixer.music.play(loops=-1)
+
     title_screen()
     continuer = True
     while continuer:
@@ -248,6 +255,13 @@ def main_menu():
                     # appui sur la touche "gauche"
                     # le carré perso se déplace à gauche
                     # Lancement du jeu
+                    pygame.mixer.Channel(1).play(pygame.mixer.Sound(r'.\assets\sounds\start.wav'))
+
+                    # Init de la musique
+                    pygame.mixer.music.stop()
+                    pygame.mixer.music.load(r'.\assets\sounds\music.wav')
+                    pygame.mixer.music.play(loops=-1)
+
                     jeu(15,
                         15,
                         {

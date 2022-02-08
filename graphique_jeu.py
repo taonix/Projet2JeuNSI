@@ -37,10 +37,8 @@ clock = pygame.time.Clock()
 # pour rester appuyé sur une touche
 pygame.key.set_repeat(200, 100)
 
-# Init de la musique
-pygame.mixer.music.load(r'.\assets\sounds\music.wav')
+# Config de la musique
 pygame.mixer.music.set_volume(0.3)
-pygame.mixer.music.play(loops=-1)
 
 
 def selectTip(image_name):  # fonction pour afficher des tips aléatoires
