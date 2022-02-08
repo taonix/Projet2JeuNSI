@@ -252,8 +252,7 @@ def main_menu():
             if event.type == pygame.KEYDOWN:
 
                 if event.key == pygame.K_SPACE:
-                    # appui sur la touche "gauche"
-                    # le carré perso se déplace à gauche
+                    # appui sur la touche "space"
                     # Lancement du jeu
                     pygame.mixer.Channel(1).play(pygame.mixer.Sound(r'.\assets\sounds\start.wav'))
 
